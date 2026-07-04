@@ -105,7 +105,7 @@
     }
 
     .title-line {
-      display: inline;
+      display: block;
     }
 
     .subtitle {
@@ -470,7 +470,7 @@
 
     .category-item-form {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
       gap: 8px;
       margin-top: 8px;
     }
@@ -1179,7 +1179,6 @@
       <div>
         <p class="kicker">준비물 체크</p>
         <h1><span class="title-line">하계수양회</span><span class="title-line">준비물 체크리스트</span></h1>
-        <p class="subtitle">챙긴 물건은 카드째로 눌러 체크. 마우스를 올리면 튀어나오고, 누르면 색이 바뀌면서 완료 표시가 남습니다.</p>
       </div>
 
       <aside class="progress-panel" aria-live="polite">
@@ -1268,7 +1267,7 @@
           { id: "work-training", name: "검정 츄리닝" },
           { id: "work-uniqlo", name: "유니클로 비닐" },
           { id: "work-socks", name: "검정색 긴 양말" },
-          { id: "work-northface", name: "노스페이스 검정 반팔" },
+          { id: "work-northface", name: "하계수양회 검정 반팔" },
           { id: "work-cap", name: "군대 모자" }
         ]
       },
@@ -1279,7 +1278,7 @@
         items: [
           { id: "sleep-underwear", name: "여벌 속옷" },
           { id: "sleep-shorts", name: "반바지" },
-          { id: "sleep-northface", name: "노스페이스 검정 반팔", note: "일어나서 그대로 침례복으로 활용" },
+          { id: "sleep-northface", name: "하계수양회 검정 반팔", note: "일어나서 그대로 침례복으로 활용" },
           { id: "sleep-neckpillow", name: "목베개" }
         ]
       },
@@ -1294,7 +1293,7 @@
           { id: "wash-swab", name: "면봉" },
           { id: "wash-razor", name: "면도기" },
           { id: "wash-hair", name: "헤어에센스" },
-          { id: "wash-kit", name: "세면도구 책상 위", note: "샴푸, 클렌징 등 들어있음" },
+          { id: "wash-kit", name: "세면도구 가방", note: "샴푸, 클렌징 등 들어있음" },
           { id: "wash-towel", name: "수건 한 장" },
           { id: "wash-hanger", name: "옷걸이" },
           { id: "wash-ecobag", name: "에코백" }
@@ -1311,19 +1310,28 @@
         ]
       },
       {
-        id: "study",
-        title: "필기 도구",
+        id: "electronics",
+        title: "전자기기",
         mark: "06",
         items: [
-          { id: "study-bible", name: "성경책" },
           { id: "study-ipad", name: "아이패드" },
           { id: "study-charger", name: "아이패드 충전기", note: "시계 충전기 같이 있는 삼단짜리" }
         ]
       },
       {
+        id: "study",
+        title: "필기 도구",
+        mark: "07",
+        items: [
+          { id: "study-bible", name: "성경책" },
+          { id: "study-note", name: "노트" },
+          { id: "study-pencil-case", name: "필통" }
+        ]
+      },
+      {
         id: "plus",
         title: "기타",
-        mark: "07",
+        mark: "08",
         items: [
           { id: "plus-gloves", name: "작업 장갑" },
           { id: "plus-battery", name: "보조배터리" },
@@ -1532,7 +1540,8 @@
             <details class="category-add-panel">
               <summary class="category-add-toggle">${categoryTitle}에 항목 추가</summary>
               <form class="category-item-form" data-category-id="${category.id}">
-                <input class="category-item-input" type="text" autocomplete="off" placeholder="추가할 준비물 입력" aria-label="${categoryTitle}에 준비물 추가">
+                <input class="category-item-input" type="text" autocomplete="off" placeholder="준비물 이름" aria-label="${categoryTitle}에 준비물 추가">
+                <input class="category-item-note-input" type="text" autocomplete="off" placeholder="설명/메모 선택" aria-label="${categoryTitle} 준비물 설명">
                 <button type="submit">추가</button>
               </form>
             </details>
@@ -1807,6 +1816,7 @@
       if (!form) return;
 
       const input = form.querySelector(".category-item-input");
+      const noteInput = form.querySelector(".category-item-note-input");
       const value = input.value.trim();
       if (!value) {
         input.focus();
@@ -1815,10 +1825,17 @@
 
       const categoryId = form.dataset.categoryId;
       const id = `custom-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      const note = noteInput ? noteInput.value.trim() : "";
 
-      customItems.push({ id, categoryId, name: value });
+      customItems.push({
+        id,
+        categoryId,
+        name: value,
+        ...(note ? { note } : {})
+      });
       saveCustomItems();
       input.value = "";
+      if (noteInput) noteInput.value = "";
       render();
 
       const added = board.querySelector(`[data-id="${CSS.escape(id)}"]`);
