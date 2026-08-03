@@ -1,4 +1,4 @@
-const CACHE_NAME = "summer-retreat-checklist-v7";
+const CACHE_NAME = "summer-retreat-checklist-v8";
 const ASSETS = [
   "./",
   "./index.html",
