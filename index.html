@@ -186,6 +186,13 @@
       gap: 8px;
     }
 
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
     .filter-btn,
     .action-btn {
       min-height: 42px;
@@ -219,14 +226,76 @@
       white-space: nowrap;
     }
 
-    .action-btn::before {
-      content: "↺";
-      width: 16px;
-      height: 16px;
+    .action-btn.is-active {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(31, 111, 91, 0.18);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.45;
+      cursor: default;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .action-icon {
+      flex: 0 0 auto;
+      width: 18px;
       display: grid;
       place-items: center;
-      font-size: 17px;
+      font-size: 18px;
       line-height: 1;
+    }
+
+    .data-menu {
+      position: relative;
+    }
+
+    .data-menu > summary {
+      list-style: none;
+    }
+
+    .data-menu > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .data-menu-popover {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 12;
+      display: grid;
+      width: 220px;
+      gap: 7px;
+      padding: 9px;
+      border: 1px solid rgba(23, 23, 23, 0.1);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 18px 40px rgba(22, 28, 45, 0.16);
+    }
+
+    .data-action {
+      min-height: 40px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 850;
+      text-align: left;
+    }
+
+    .data-action:hover {
+      border-color: rgba(31, 111, 91, 0.38);
+      background: #f4faf7;
+      color: var(--blue);
+    }
+
+    .data-action.is-danger {
+      color: var(--coral);
     }
 
     .adder {
@@ -356,18 +425,50 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 12px;
+    }
+
+    .category-body {
+      margin-top: 12px;
+    }
+
+    .category.is-collapsed .category-body,
+    .board.is-reordering .category-body {
+      display: none;
     }
 
     .category-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      flex: 1 1 auto;
       min-width: 0;
       margin: 0;
-      font-size: 20px;
-      line-height: 1.2;
+      font-size: inherit;
       letter-spacing: 0;
+    }
+
+    .category-toggle {
+      width: 100%;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 10px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+    }
+
+    .category-toggle:hover .category-title-text {
+      color: var(--blue);
+    }
+
+    .category-title-text {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.2;
+      transition: color var(--fast);
     }
 
     .category-mark {
@@ -394,11 +495,103 @@
       white-space: nowrap;
     }
 
+    .category-chevron {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      color: var(--blue);
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1;
+      transform: rotate(180deg);
+      transition: transform var(--fast);
+    }
+
+    .category.is-collapsed .category-chevron {
+      transform: rotate(0deg);
+    }
+
     .category-tools {
       flex: 0 0 auto;
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .category-reorder-tools {
+      display: none;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .board.is-reordering {
+      grid-template-columns: 1fr;
+    }
+
+    .board.is-reordering .category {
+      cursor: default;
+    }
+
+    .board.is-reordering .category-tools {
+      display: none;
+    }
+
+    .board.is-reordering .category-reorder-tools {
+      display: flex;
+    }
+
+    .board.is-reordering .category-toggle {
+      pointer-events: none;
+    }
+
+    .category-move-btn,
+    .category-drag-handle {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 1px solid rgba(23, 23, 23, 0.1);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--blue);
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .category-move-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .category-drag-handle {
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .category-drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .category.is-dragging {
+      z-index: 2;
+      border-color: rgba(31, 111, 91, 0.55);
+      background: #f4faf7;
+      box-shadow: 0 18px 40px rgba(31, 111, 91, 0.2);
+      opacity: 0.72;
+    }
+
+    .category.just-moved {
+      animation: categoryMoved 520ms ease;
+    }
+
+    @keyframes categoryMoved {
+      0% { background: #e4f4ec; transform: translateY(-3px); }
+      100% { background: rgba(255, 255, 255, 0.82); transform: translateY(0); }
     }
 
     .category-action {
@@ -524,6 +717,23 @@
       color: var(--ink);
       box-shadow: 0 3px 0 rgba(23, 23, 23, 0.04);
       transition: transform var(--fast), border-color var(--fast), background var(--fast), color var(--fast), box-shadow var(--fast);
+    }
+
+    .item.just-added {
+      animation: itemAdded 820ms ease;
+    }
+
+    @keyframes itemAdded {
+      0% {
+        border-color: rgba(31, 111, 91, 0.75);
+        background: #dff1e8;
+        box-shadow: 0 0 0 5px rgba(31, 111, 91, 0.12);
+      }
+      100% {
+        border-color: var(--line);
+        background: var(--surface);
+        box-shadow: 0 3px 0 rgba(23, 23, 23, 0.04);
+      }
     }
 
     .item-main {
@@ -941,6 +1151,12 @@
         backdrop-filter: none;
       }
 
+      .toolbar-actions {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
       .filters {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -971,9 +1187,25 @@
 
       .action-btn {
         min-height: 40px;
+        min-width: 0;
+        padding: 0 7px;
         border-color: rgba(23, 23, 23, 0.08);
         background: rgba(255, 255, 255, 0.82);
-        font-size: 14px;
+        font-size: 13px;
+      }
+
+      .action-icon {
+        width: 16px;
+        font-size: 16px;
+      }
+
+      .data-menu,
+      .data-menu > summary {
+        width: 100%;
+      }
+
+      .data-menu-popover {
+        width: min(260px, calc(100vw - 24px));
       }
 
       .action-btn:hover {
@@ -1038,13 +1270,24 @@
 
       .category-head {
         gap: 8px;
-        margin-bottom: 10px;
-        align-items: flex-start;
+        align-items: center;
+      }
+
+      .category-body {
+        margin-top: 10px;
       }
 
       .category-title {
-        gap: 8px;
-        font-size: 18px;
+        min-width: 0;
+      }
+
+      .category-toggle {
+        grid-template-columns: auto minmax(0, 1fr) auto auto;
+        gap: 7px;
+      }
+
+      .category-title-text {
+        font-size: 17px;
       }
 
       .category-mark {
@@ -1067,6 +1310,27 @@
         min-height: 28px;
         padding: 0 7px;
         font-size: 11px;
+      }
+
+      .category-chevron {
+        width: 18px;
+        height: 24px;
+        font-size: 18px;
+      }
+
+      .category-move-btn,
+      .category-drag-handle {
+        width: 32px;
+        height: 32px;
+      }
+
+      .board.is-reordering .category-title-text {
+        font-size: 16px;
+      }
+
+      .board.is-reordering .category-count,
+      .board.is-reordering .category-chevron {
+        display: none;
       }
 
       .items {
@@ -1198,7 +1462,29 @@
         <button class="filter-btn" type="button" data-filter="todo">남은 것</button>
         <button class="filter-btn" type="button" data-filter="done">완료</button>
       </div>
-      <button class="action-btn" id="resetBtn" type="button">체크 초기화</button>
+      <div class="toolbar-actions">
+        <button class="action-btn" id="toggleAllBtn" type="button">
+          <span class="action-icon" aria-hidden="true">⌄</span>
+          <span id="toggleAllLabel">전체 펼치기</span>
+        </button>
+        <button class="action-btn" id="reorderBtn" type="button" aria-pressed="false">
+          <span class="action-icon" aria-hidden="true">↕</span>
+          <span id="reorderLabel">순서 변경</span>
+        </button>
+        <details class="data-menu" id="dataMenu">
+          <summary class="action-btn">
+            <span class="action-icon" aria-hidden="true">•••</span>
+            <span>데이터</span>
+          </summary>
+          <div class="data-menu-popover">
+            <button class="data-action" id="exportBtn" type="button">백업 저장</button>
+            <button class="data-action" id="importBtn" type="button">백업 불러오기</button>
+            <button class="data-action" id="restoreAutoBackupBtn" type="button">자동 백업 복원</button>
+            <button class="data-action is-danger" id="resetBtn" type="button">체크 초기화</button>
+          </div>
+        </details>
+        <input id="importFileInput" type="file" accept="application/json,.json" hidden>
+      </div>
     </section>
 
     <details class="add-panel">
@@ -1246,6 +1532,21 @@
     const DELETED_KEY = "summer-retreat-service-deleted-items-v1";
     const CATEGORY_KEY = "summer-retreat-service-category-edits-v1";
     const ITEM_KEY = "summer-retreat-service-item-edits-v1";
+    const ORDER_KEY = "summer-retreat-service-category-order-v1";
+    const EXPANDED_KEY = "summer-retreat-service-expanded-categories-v1";
+    const ADD_PANEL_KEY = "summer-retreat-service-open-add-panels-v1";
+    const AUTO_BACKUP_KEY = "summer-retreat-service-auto-backup-before-layout-v1";
+    const DATA_KEYS = [
+      STORAGE_KEY,
+      CUSTOM_KEY,
+      CUSTOM_CATEGORY_KEY,
+      DELETED_KEY,
+      CATEGORY_KEY,
+      ITEM_KEY,
+      ORDER_KEY,
+      EXPANDED_KEY,
+      ADD_PANEL_KEY
+    ];
 
     const categories = [
       {
@@ -1344,18 +1645,35 @@
       }
     ];
 
+    createAutomaticBackup();
+
     let checkedItems = loadSet(STORAGE_KEY);
     let customItems = loadCustomItems();
     let customCategories = loadCustomCategories();
     let deletedItems = loadSet(DELETED_KEY);
     let categoryEdits = loadObject(CATEGORY_KEY);
     let itemEdits = loadObject(ITEM_KEY);
+    let categoryOrder = loadArray(ORDER_KEY);
+    let expandedCategories = loadSet(EXPANDED_KEY);
+    let openAddPanels = loadSet(ADD_PANEL_KEY);
     let currentFilter = "all";
+    let isReorderMode = false;
+    let dragState = null;
+    const itemDrafts = {};
 
     const board = document.getElementById("board");
     const progressCount = document.getElementById("progressCount");
     const progressRate = document.getElementById("progressRate");
     const progressFill = document.getElementById("progressFill");
+    const toggleAllBtn = document.getElementById("toggleAllBtn");
+    const toggleAllLabel = document.getElementById("toggleAllLabel");
+    const reorderBtn = document.getElementById("reorderBtn");
+    const reorderLabel = document.getElementById("reorderLabel");
+    const dataMenu = document.getElementById("dataMenu");
+    const exportBtn = document.getElementById("exportBtn");
+    const importBtn = document.getElementById("importBtn");
+    const importFileInput = document.getElementById("importFileInput");
+    const restoreAutoBackupBtn = document.getElementById("restoreAutoBackupBtn");
     const resetBtn = document.getElementById("resetBtn");
     const emptyState = document.getElementById("emptyState");
     const categoryAddForm = document.getElementById("categoryAddForm");
@@ -1405,6 +1723,32 @@
       }
     }
 
+    function loadArray(key) {
+      try {
+        const value = JSON.parse(localStorage.getItem(key) || "[]");
+        return Array.isArray(value) ? value : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function createAutomaticBackup() {
+      if (localStorage.getItem(AUTO_BACKUP_KEY)) return;
+
+      const data = {};
+      DATA_KEYS.forEach((key) => {
+        const value = localStorage.getItem(key);
+        if (value !== null) data[key] = value;
+      });
+
+      localStorage.setItem(AUTO_BACKUP_KEY, JSON.stringify({
+        app: "하계수양회 준비물 체크리스트",
+        version: 1,
+        createdAt: new Date().toISOString(),
+        data
+      }));
+    }
+
     function saveChecked() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify([...checkedItems]));
     }
@@ -1429,12 +1773,32 @@
       localStorage.setItem(ITEM_KEY, JSON.stringify(itemEdits));
     }
 
+    function saveCategoryOrder() {
+      localStorage.setItem(ORDER_KEY, JSON.stringify(categoryOrder));
+    }
+
+    function saveExpandedCategories() {
+      localStorage.setItem(EXPANDED_KEY, JSON.stringify([...expandedCategories]));
+    }
+
+    function saveOpenAddPanels() {
+      localStorage.setItem(ADD_PANEL_KEY, JSON.stringify([...openAddPanels]));
+    }
+
     function activeCategories() {
-      return [...categories, ...customCategories]
-        .filter((category) => !categoryEdits[category.id]?.deleted)
+      const available = [...categories, ...customCategories]
+        .filter((category) => !categoryEdits[category.id]?.deleted);
+      const order = new Map(categoryOrder.map((id, index) => [id, index]));
+
+      return available
+        .sort((a, b) => {
+          const aIndex = order.has(a.id) ? order.get(a.id) : Number.MAX_SAFE_INTEGER;
+          const bIndex = order.has(b.id) ? order.get(b.id) : Number.MAX_SAFE_INTEGER;
+          return aIndex - bIndex;
+        })
         .map((category, index) => ({
           ...category,
-          mark: category.mark || String(index + 1).padStart(2, "0"),
+          mark: String(index + 1).padStart(2, "0"),
           title: categoryEdits[category.id]?.title || category.title
         }));
     }
@@ -1474,12 +1838,49 @@
       })));
     }
 
-    function render() {
+    function captureBoardFocus() {
+      const active = document.activeElement;
+      if (!active || !board.contains(active) || !active.matches(".category-item-input, .category-item-note-input")) {
+        return null;
+      }
+
+      const form = active.closest(".category-item-form");
+      return {
+        categoryId: form?.dataset.categoryId,
+        fieldClass: active.classList.contains("category-item-note-input")
+          ? "category-item-note-input"
+          : "category-item-input",
+        selectionStart: active.selectionStart,
+        selectionEnd: active.selectionEnd
+      };
+    }
+
+    function restoreBoardFocus(state) {
+      if (!state?.categoryId) return;
+      const form = board.querySelector(`.category-item-form[data-category-id="${CSS.escape(state.categoryId)}"]`);
+      const input = form?.querySelector(`.${state.fieldClass}`);
+      if (!input) return;
+
+      input.focus({ preventScroll: true });
+      if (typeof state.selectionStart === "number") {
+        input.setSelectionRange(state.selectionStart, state.selectionEnd);
+      }
+    }
+
+    function render(options = {}) {
+      const previousScrollY = window.scrollY;
+      const capturedFocus = captureBoardFocus();
+      const previousAnchorTop = options.anchorCategoryId
+        ? board.querySelector(`[data-category="${CSS.escape(options.anchorCategoryId)}"]`)?.getBoundingClientRect().top
+        : null;
       const categoryList = allCategories();
 
-      board.innerHTML = categoryList.map((category) => {
+      board.classList.toggle("is-reordering", isReorderMode);
+      board.innerHTML = categoryList.map((category, categoryIndex) => {
+        const isExpanded = expandedCategories.has(category.id);
         const checkedCount = category.items.filter((item) => checkedItems.has(item.id)).length;
         const categoryTitle = escapeHtml(category.title);
+        const draft = itemDrafts[category.id] || { name: "", note: "" };
         const itemButtons = category.items.map((item) => {
           const isChecked = checkedItems.has(item.id);
           const hidden = currentFilter === "done" && !isChecked || currentFilter === "todo" && isChecked;
@@ -1524,33 +1925,73 @@
         const emptyItems = itemButtons ? "" : `<p class="category-empty">아직 항목이 없습니다.</p>`;
 
         return `
-          <article class="category" data-category="${category.id}">
+          <article class="category ${isExpanded ? "" : "is-collapsed"}" data-category="${category.id}">
             <div class="category-head">
               <h2 class="category-title">
-                <span class="category-mark">${category.mark}</span>
-                <span>${categoryTitle}</span>
+                <button
+                  class="category-toggle"
+                  type="button"
+                  data-category-id="${category.id}"
+                  aria-expanded="${isReorderMode ? false : isExpanded}"
+                  aria-label="${categoryTitle} ${isExpanded ? "접기" : "펼치기"}"
+                  ${isReorderMode ? "tabindex=\"-1\" aria-disabled=\"true\"" : ""}
+                >
+                  <span class="category-mark">${category.mark}</span>
+                  <span class="category-title-text">${categoryTitle}</span>
+                  <span class="category-count">${checkedCount}/${category.items.length}</span>
+                  <span class="category-chevron" aria-hidden="true">⌄</span>
+                </button>
               </h2>
               <div class="category-tools">
-                <span class="category-count">${checkedCount}/${category.items.length}</span>
                 <button class="category-action category-edit-btn" type="button" data-category-id="${category.id}">수정</button>
                 <button class="category-action category-delete-btn" type="button" data-category-id="${category.id}">삭제</button>
               </div>
+              <div class="category-reorder-tools">
+                <button class="category-move-btn category-move-up" type="button" data-category-id="${category.id}" aria-label="${categoryTitle} 위로 이동" title="위로 이동" ${categoryIndex === 0 ? "disabled" : ""}>↑</button>
+                <button class="category-move-btn category-move-down" type="button" data-category-id="${category.id}" aria-label="${categoryTitle} 아래로 이동" title="아래로 이동" ${categoryIndex === categoryList.length - 1 ? "disabled" : ""}>↓</button>
+                <button class="category-drag-handle" type="button" data-category-id="${category.id}" aria-label="${categoryTitle} 끌어서 순서 변경" title="끌어서 이동">⠿</button>
+              </div>
             </div>
-            <div class="items">${itemButtons}${emptyItems}</div>
-            <details class="category-add-panel">
-              <summary class="category-add-toggle">${categoryTitle}에 항목 추가</summary>
-              <form class="category-item-form" data-category-id="${category.id}">
-                <input class="category-item-input" type="text" autocomplete="off" placeholder="준비물 이름" aria-label="${categoryTitle}에 준비물 추가">
-                <input class="category-item-note-input" type="text" autocomplete="off" placeholder="설명/메모 선택" aria-label="${categoryTitle} 준비물 설명">
-                <button type="submit">추가</button>
-              </form>
-            </details>
+            <div class="category-body">
+              <div class="items">${itemButtons}${emptyItems}</div>
+              <details class="category-add-panel" ${openAddPanels.has(category.id) ? "open" : ""}>
+                <summary class="category-add-toggle" data-category-id="${category.id}">${categoryTitle}에 항목 추가</summary>
+                <form class="category-item-form" data-category-id="${category.id}">
+                  <input class="category-item-input" type="text" autocomplete="off" placeholder="준비물 이름" aria-label="${categoryTitle}에 준비물 추가" value="${escapeHtml(draft.name || "")}">
+                  <input class="category-item-note-input" type="text" autocomplete="off" placeholder="설명/메모 선택" aria-label="${categoryTitle} 준비물 설명" value="${escapeHtml(draft.note || "")}">
+                  <button type="submit">추가</button>
+                </form>
+              </details>
+            </div>
           </article>
         `;
       }).join("");
 
       updateProgress();
       updateEmptyState();
+      updateToggleAllButton();
+
+      if (options.anchorCategoryId && previousAnchorTop !== null) {
+        const freshAnchor = board.querySelector(`[data-category="${CSS.escape(options.anchorCategoryId)}"]`);
+        if (freshAnchor) window.scrollBy(0, freshAnchor.getBoundingClientRect().top - previousAnchorTop);
+      } else if (options.preserveScroll !== false) {
+        window.scrollTo(0, previousScrollY);
+      }
+
+      if (options.focusCategoryId) {
+        const input = board.querySelector(`.category-item-form[data-category-id="${CSS.escape(options.focusCategoryId)}"] .category-item-input`);
+        if (input) input.focus({ preventScroll: true });
+      } else {
+        restoreBoardFocus(capturedFocus);
+      }
+
+      if (options.highlightItemId) {
+        const added = board.querySelector(`.item[data-id="${CSS.escape(options.highlightItemId)}"]`);
+        if (added) {
+          added.classList.add("just-added");
+          window.setTimeout(() => added.classList.remove("just-added"), 850);
+        }
+      }
     }
 
     function updateProgress() {
@@ -1569,6 +2010,57 @@
       emptyState.classList.toggle("is-visible", visibleItems === 0 && visibleCategories === 0);
     }
 
+    function updateToggleAllButton() {
+      const categoryIds = allCategories().map((category) => category.id);
+      const allExpanded = categoryIds.length > 0 && categoryIds.every((id) => expandedCategories.has(id));
+      toggleAllLabel.textContent = allExpanded ? "전체 접기" : "전체 펼치기";
+      toggleAllBtn.querySelector(".action-icon").textContent = allExpanded ? "⌃" : "⌄";
+      toggleAllBtn.setAttribute("aria-label", allExpanded ? "대분류 전체 접기" : "대분류 전체 펼치기");
+    }
+
+    function toggleAllCategories() {
+      const categoryIds = allCategories().map((category) => category.id);
+      const allExpanded = categoryIds.length > 0 && categoryIds.every((id) => expandedCategories.has(id));
+
+      if (allExpanded) {
+        categoryIds.forEach((id) => expandedCategories.delete(id));
+      } else {
+        categoryIds.forEach((id) => expandedCategories.add(id));
+      }
+
+      saveExpandedCategories();
+      render();
+    }
+
+    function toggleCategory(button) {
+      if (isReorderMode) return;
+      const categoryId = button.dataset.categoryId;
+      const category = button.closest(".category");
+      const willExpand = !expandedCategories.has(categoryId);
+
+      if (willExpand) {
+        expandedCategories.add(categoryId);
+      } else {
+        expandedCategories.delete(categoryId);
+      }
+      saveExpandedCategories();
+
+      category.classList.toggle("is-collapsed", !willExpand);
+      button.setAttribute("aria-expanded", String(willExpand));
+      const title = category.querySelector(".category-title-text")?.textContent || "대분류";
+      button.setAttribute("aria-label", `${title} ${willExpand ? "접기" : "펼치기"}`);
+      updateToggleAllButton();
+    }
+
+    function updateCategoryCount(categoryId) {
+      const category = findCategory(categoryId);
+      const card = board.querySelector(`[data-category="${CSS.escape(categoryId)}"]`);
+      if (!category || !card) return;
+      const checkedCount = category.items.filter((item) => checkedItems.has(item.id)).length;
+      const count = card.querySelector(".category-count");
+      if (count) count.textContent = `${checkedCount}/${category.items.length}`;
+    }
+
     function toggleItem(button) {
       const id = button.dataset.id;
       const becameChecked = !checkedItems.has(id);
@@ -1580,16 +2072,25 @@
       }
 
       saveChecked();
-      render();
+      const item = button.closest(".item");
+      item.classList.toggle("is-checked", becameChecked);
+      button.setAttribute("aria-pressed", String(becameChecked));
+      const badge = item.querySelector(".badge");
+      if (badge) badge.textContent = becameChecked ? "완료" : "대기";
+      const hidden = currentFilter === "done" && !becameChecked || currentFilter === "todo" && becameChecked;
+      item.classList.toggle("is-hidden", hidden);
 
-      if (becameChecked) {
-        const freshButton = board.querySelector(`[data-id="${CSS.escape(id)}"]`);
-        if (freshButton) showBurst(freshButton);
-      }
+      const categoryId = item.closest(".category")?.dataset.category;
+      if (categoryId) updateCategoryCount(categoryId);
+      updateProgress();
+      updateEmptyState();
+
+      if (becameChecked) showBurst(button);
     }
 
     function deleteItem(button) {
       const id = button.dataset.id;
+      const categoryId = button.closest(".category")?.dataset.category;
       const customCountBefore = customItems.length;
 
       customItems = customItems.filter((item) => item.id !== id);
@@ -1604,7 +2105,7 @@
       delete itemEdits[id];
       saveChecked();
       saveItemEdits();
-      render();
+      render({ anchorCategoryId: categoryId });
     }
 
     function findCategory(categoryId) {
@@ -1718,7 +2219,7 @@
           deleted: false
         };
         saveCategoryEdits();
-        render();
+        render({ anchorCategoryId: editorState.id });
         closeEditor();
         return;
       }
@@ -1736,10 +2237,16 @@
           ...(categoryEdits[editorState.id] || {}),
           deleted: true
         };
+        expandedCategories.delete(editorState.id);
+        openAddPanels.delete(editorState.id);
+        categoryOrder = categoryOrder.filter((id) => id !== editorState.id);
 
         saveChecked();
         saveDeletedItems();
         saveCategoryEdits();
+        saveExpandedCategories();
+        saveOpenAddPanels();
+        saveCategoryOrder();
         render();
         closeEditor();
         return;
@@ -1748,6 +2255,7 @@
       if (editorState.type !== "item") return;
 
       const id = editorState.id;
+      const categoryId = findItem(id)?.categoryId;
       const name = editNameInput.value.trim();
       if (!name) return;
 
@@ -1767,7 +2275,7 @@
         saveItemEdits();
       }
 
-      render();
+      render({ anchorCategoryId: categoryId });
       closeEditor();
     }
 
@@ -1799,13 +2307,23 @@
       const mark = String(categories.length + customCategories.length + 1).padStart(2, "0");
 
       customCategories.push({ id, title, mark, items: [] });
+      categoryOrder = allCategories().map((category) => category.id);
+      expandedCategories.add(id);
+      openAddPanels.add(id);
       saveCustomCategories();
+      saveCategoryOrder();
+      saveExpandedCategories();
+      saveOpenAddPanels();
       categoryNameInput.value = "";
-      render();
+      render({ preserveScroll: true });
 
       const addedCategory = board.querySelector(`[data-category="${CSS.escape(id)}"]`);
       if (addedCategory) {
         addedCategory.scrollIntoView({ behavior: "smooth", block: "center" });
+        window.setTimeout(() => {
+          const input = addedCategory.querySelector(".category-item-input");
+          if (input) input.focus({ preventScroll: true });
+        }, 320);
       }
     }
 
@@ -1834,22 +2352,183 @@
         ...(note ? { note } : {})
       });
       saveCustomItems();
-      input.value = "";
-      if (noteInput) noteInput.value = "";
-      render();
-
-      const added = board.querySelector(`[data-id="${CSS.escape(id)}"]`);
-      if (added) {
-        added.scrollIntoView({ behavior: "smooth", block: "center" });
-        const addedButton = added.querySelector(".item-main");
-        if (addedButton) addedButton.focus({ preventScroll: true });
-      }
+      itemDrafts[categoryId] = { name: "", note: "" };
+      expandedCategories.add(categoryId);
+      openAddPanels.add(categoryId);
+      saveExpandedCategories();
+      saveOpenAddPanels();
+      render({
+        anchorCategoryId: categoryId,
+        focusCategoryId: categoryId,
+        highlightItemId: id
+      });
     }
 
     function resetChecks() {
+      if (!window.confirm("체크 표시만 모두 초기화할까요? 추가하거나 수정한 내용은 그대로 남습니다.")) return;
       checkedItems = new Set();
       saveChecked();
+      dataMenu.open = false;
       render();
+    }
+
+    function setReorderMode(enabled) {
+      isReorderMode = enabled;
+      reorderBtn.classList.toggle("is-active", enabled);
+      reorderBtn.setAttribute("aria-pressed", String(enabled));
+      reorderLabel.textContent = enabled ? "순서 완료" : "순서 변경";
+      reorderBtn.querySelector(".action-icon").textContent = enabled ? "✓" : "↕";
+      toggleAllBtn.disabled = enabled;
+      dataMenu.open = false;
+      render();
+    }
+
+    function moveCategory(categoryId, direction, sourceButton) {
+      const ids = allCategories().map((category) => category.id);
+      const currentIndex = ids.indexOf(categoryId);
+      const nextIndex = currentIndex + direction;
+      if (currentIndex < 0 || nextIndex < 0 || nextIndex >= ids.length) return;
+
+      [ids[currentIndex], ids[nextIndex]] = [ids[nextIndex], ids[currentIndex]];
+      categoryOrder = ids;
+      saveCategoryOrder();
+      render({ anchorCategoryId: categoryId });
+
+      const card = board.querySelector(`[data-category="${CSS.escape(categoryId)}"]`);
+      if (!card) return;
+      card.classList.add("just-moved");
+      window.setTimeout(() => card.classList.remove("just-moved"), 540);
+      const selector = sourceButton?.classList.contains("category-move-up")
+        ? ".category-move-up"
+        : ".category-move-down";
+      card.querySelector(selector)?.focus({ preventScroll: true });
+    }
+
+    function updateRenderedOrderState() {
+      const cards = [...board.querySelectorAll(".category")];
+      cards.forEach((card, index) => {
+        const mark = card.querySelector(".category-mark");
+        const up = card.querySelector(".category-move-up");
+        const down = card.querySelector(".category-move-down");
+        if (mark) mark.textContent = String(index + 1).padStart(2, "0");
+        if (up) up.disabled = index === 0;
+        if (down) down.disabled = index === cards.length - 1;
+      });
+    }
+
+    function startCategoryDrag(event, handle) {
+      if (!isReorderMode || event.button > 0) return;
+      const card = handle.closest(".category");
+      if (!card) return;
+
+      dragState = {
+        pointerId: event.pointerId,
+        card,
+        handle,
+        startX: event.clientX,
+        startY: event.clientY,
+        moved: false
+      };
+      card.classList.add("is-dragging");
+      handle.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+    }
+
+    function moveCategoryDrag(event) {
+      if (!dragState || event.pointerId !== dragState.pointerId) return;
+      const distance = Math.hypot(event.clientX - dragState.startX, event.clientY - dragState.startY);
+      if (distance < 5 && !dragState.moved) return;
+      dragState.moved = true;
+
+      if (event.clientY < 90) window.scrollBy(0, -14);
+      if (event.clientY > window.innerHeight - 90) window.scrollBy(0, 14);
+
+      const target = document.elementFromPoint(event.clientX, event.clientY)?.closest(".category");
+      if (!target || target === dragState.card || target.parentElement !== board) return;
+      const targetRect = target.getBoundingClientRect();
+      const placeAfter = event.clientY > targetRect.top + targetRect.height / 2;
+      board.insertBefore(dragState.card, placeAfter ? target.nextSibling : target);
+      updateRenderedOrderState();
+      event.preventDefault();
+    }
+
+    function endCategoryDrag(event) {
+      if (!dragState || event.pointerId !== dragState.pointerId) return;
+      const { card, handle, moved } = dragState;
+      try {
+        handle.releasePointerCapture?.(event.pointerId);
+      } catch {}
+      card.classList.remove("is-dragging");
+      dragState = null;
+
+      if (!moved) return;
+      categoryOrder = [...board.querySelectorAll(".category")].map((entry) => entry.dataset.category);
+      saveCategoryOrder();
+      card.classList.add("just-moved");
+      window.setTimeout(() => card.classList.remove("just-moved"), 540);
+    }
+
+    function makeBackupPayload() {
+      const data = {};
+      DATA_KEYS.forEach((key) => {
+        const value = localStorage.getItem(key);
+        if (value !== null) data[key] = value;
+      });
+      return {
+        app: "하계수양회 준비물 체크리스트",
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        data
+      };
+    }
+
+    function exportBackup() {
+      const blob = new Blob([JSON.stringify(makeBackupPayload(), null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "하계수양회-준비물-백업.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      dataMenu.open = false;
+    }
+
+    function applyBackupData(data) {
+      DATA_KEYS.forEach((key) => localStorage.removeItem(key));
+      DATA_KEYS.forEach((key) => {
+        if (typeof data[key] === "string") localStorage.setItem(key, data[key]);
+      });
+      window.location.reload();
+    }
+
+    async function importBackup(event) {
+      const file = event.target.files?.[0];
+      event.target.value = "";
+      if (!file) return;
+
+      try {
+        const payload = JSON.parse(await file.text());
+        if (!payload || payload.app !== "하계수양회 준비물 체크리스트" || typeof payload.data !== "object") {
+          throw new Error("invalid-backup");
+        }
+        if (!window.confirm("현재 내용을 선택한 백업 내용으로 바꿀까요?")) return;
+        applyBackupData(payload.data);
+      } catch {
+        window.alert("이 앱에서 만든 백업 파일을 선택해 주세요.");
+      }
+    }
+
+    function restoreAutomaticBackup() {
+      try {
+        const payload = JSON.parse(localStorage.getItem(AUTO_BACKUP_KEY) || "null");
+        if (!payload?.data) throw new Error("missing-backup");
+        if (!window.confirm("기능을 바꾸기 전 자동 백업으로 되돌릴까요?")) return;
+        applyBackupData(payload.data);
+      } catch {
+        window.alert("복원할 자동 백업이 없습니다.");
+      }
     }
 
     function escapeHtml(value) {
@@ -1862,6 +2541,26 @@
     }
 
     board.addEventListener("click", (event) => {
+      const moveUpButton = event.target.closest(".category-move-up");
+      if (moveUpButton) {
+        moveCategory(moveUpButton.dataset.categoryId, -1, moveUpButton);
+        return;
+      }
+
+      const moveDownButton = event.target.closest(".category-move-down");
+      if (moveDownButton) {
+        moveCategory(moveDownButton.dataset.categoryId, 1, moveDownButton);
+        return;
+      }
+
+      if (event.target.closest(".category-drag-handle")) return;
+
+      const categoryToggle = event.target.closest(".category-toggle");
+      if (categoryToggle) {
+        toggleCategory(categoryToggle);
+        return;
+      }
+
       const categoryEditButton = event.target.closest(".category-edit-btn");
       if (categoryEditButton) {
         editCategory(categoryEditButton);
@@ -1888,7 +2587,41 @@
 
       const button = event.target.closest(".item-main");
       if (button) toggleItem(button);
+
+      const addToggle = event.target.closest(".category-add-toggle");
+      if (addToggle) {
+        window.setTimeout(() => {
+          const panel = addToggle.closest(".category-add-panel");
+          const categoryId = addToggle.dataset.categoryId;
+          if (panel?.open) {
+            openAddPanels.add(categoryId);
+          } else {
+            openAddPanels.delete(categoryId);
+          }
+          saveOpenAddPanels();
+        }, 0);
+      }
     });
+
+    board.addEventListener("input", (event) => {
+      const input = event.target.closest(".category-item-input, .category-item-note-input");
+      if (!input) return;
+      const form = input.closest(".category-item-form");
+      if (!form) return;
+      itemDrafts[form.dataset.categoryId] = {
+        name: form.querySelector(".category-item-input")?.value || "",
+        note: form.querySelector(".category-item-note-input")?.value || ""
+      };
+    });
+
+    board.addEventListener("pointerdown", (event) => {
+      const handle = event.target.closest(".category-drag-handle");
+      if (handle) startCategoryDrag(event, handle);
+    });
+
+    window.addEventListener("pointermove", moveCategoryDrag, { passive: false });
+    window.addEventListener("pointerup", endCategoryDrag);
+    window.addEventListener("pointercancel", endCategoryDrag);
 
     board.addEventListener("submit", (event) => {
       if (event.target.matches(".category-item-form")) {
@@ -1900,6 +2633,12 @@
       button.addEventListener("click", () => setFilter(button.dataset.filter));
     });
 
+    toggleAllBtn.addEventListener("click", toggleAllCategories);
+    reorderBtn.addEventListener("click", () => setReorderMode(!isReorderMode));
+    exportBtn.addEventListener("click", exportBackup);
+    importBtn.addEventListener("click", () => importFileInput.click());
+    importFileInput.addEventListener("change", importBackup);
+    restoreAutoBackupBtn.addEventListener("click", restoreAutomaticBackup);
     resetBtn.addEventListener("click", resetChecks);
     categoryAddForm.addEventListener("submit", addCategory);
     editForm.addEventListener("submit", saveEditor);
@@ -1910,6 +2649,10 @@
 
     window.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && !editDialog.hidden) closeEditor();
+    });
+
+    document.addEventListener("click", (event) => {
+      if (dataMenu.open && !event.target.closest("#dataMenu")) dataMenu.open = false;
     });
 
     render();
