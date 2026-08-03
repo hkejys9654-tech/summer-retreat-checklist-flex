@@ -564,6 +564,27 @@
 
     .board.is-reordering .category {
       cursor: default;
+      will-change: transform;
+    }
+
+    .board.is-reordering .category:not(.is-dragging):not(.just-moved) {
+      transform-origin: 50% 50%;
+      animation: reorderWiggle 460ms ease-in-out infinite alternate;
+    }
+
+    .board.is-reordering .category:nth-child(even):not(.is-dragging):not(.just-moved) {
+      animation-duration: 520ms;
+      animation-direction: alternate-reverse;
+      animation-delay: -140ms;
+    }
+
+    .board.is-reordering .category:nth-child(3n):not(.is-dragging):not(.just-moved) {
+      animation-duration: 410ms;
+      animation-delay: -220ms;
+    }
+
+    .board.is-reordering.has-active-drag .category:not(.is-dragging):not(.just-moved) {
+      animation-duration: 340ms;
     }
 
     .board.is-reordering .category-tools {
@@ -629,17 +650,25 @@
       z-index: 2;
       border-color: rgba(31, 111, 91, 0.55);
       background: #f4faf7;
-      box-shadow: 0 18px 40px rgba(31, 111, 91, 0.2);
-      opacity: 0.72;
+      box-shadow: 0 22px 44px rgba(31, 111, 91, 0.24);
+      opacity: 0.96;
+      transform: translateY(-3px) scale(1.035);
     }
 
     .category.just-moved {
-      animation: categoryMoved 520ms ease;
+      animation: categoryMoved 560ms cubic-bezier(0.22, 1.15, 0.36, 1);
+    }
+
+    @keyframes reorderWiggle {
+      0% { transform: translateY(0) rotate(-0.35deg) scale(0.998); }
+      100% { transform: translateY(-1.5px) rotate(0.35deg) scale(1.002); }
     }
 
     @keyframes categoryMoved {
-      0% { background: #e4f4ec; transform: translateY(-3px); }
-      100% { background: rgba(255, 255, 255, 0.82); transform: translateY(0); }
+      0% { background: #dff1e8; transform: translateY(-5px) scale(1.035); }
+      58% { background: #edf8f2; transform: translateY(1px) scale(0.992); }
+      78% { transform: translateY(-1px) scale(1.008); }
+      100% { background: rgba(255, 255, 255, 0.82); transform: translateY(0) scale(1); }
     }
 
     .category-action {
@@ -1718,6 +1747,7 @@
     let isReorderMode = false;
     const DRAG_HOLD_MS = 420;
     let dragState = null;
+    const categoryShiftAnimations = new WeakMap();
     const itemDrafts = {};
 
     const board = document.getElementById("board");
@@ -2442,7 +2472,59 @@
       render();
     }
 
+    function captureCategoryPositions() {
+      const positions = new Map();
+      board.querySelectorAll(".category").forEach((card) => {
+        const runningAnimation = categoryShiftAnimations.get(card);
+        if (runningAnimation) {
+          runningAnimation.cancel();
+          categoryShiftAnimations.delete(card);
+        }
+        positions.set(card.dataset.category, card.getBoundingClientRect());
+      });
+      return positions;
+    }
+
+    function animateCategoryReflow(previousPositions, activeCategoryId) {
+      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches || !Element.prototype.animate) return;
+
+      board.querySelectorAll(".category").forEach((card) => {
+        const previous = previousPositions.get(card.dataset.category);
+        if (!previous) return;
+        const current = card.getBoundingClientRect();
+        const deltaX = previous.left - current.left;
+        const deltaY = previous.top - current.top;
+        if (Math.abs(deltaX) < 0.5 && Math.abs(deltaY) < 0.5) return;
+
+        const isActive = card.dataset.category === activeCategoryId;
+        const overshootX = deltaX * -0.045;
+        const overshootY = deltaY * -0.045;
+        const animation = card.animate([
+          {
+            transform: `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${isActive ? 1.035 : 0.985})`
+          },
+          {
+            offset: 0.76,
+            transform: `translate3d(${overshootX}px, ${overshootY}px, 0) scale(${isActive ? 1.045 : 1.008})`
+          },
+          {
+            transform: `translate3d(0, 0, 0) scale(${isActive ? 1.035 : 1})`
+          }
+        ], {
+          duration: isActive ? 300 : 360,
+          easing: "cubic-bezier(0.22, 1.12, 0.36, 1)",
+          fill: "none"
+        });
+
+        categoryShiftAnimations.set(card, animation);
+        animation.addEventListener("finish", () => {
+          if (categoryShiftAnimations.get(card) === animation) categoryShiftAnimations.delete(card);
+        }, { once: true });
+      });
+    }
+
     function moveCategory(categoryId, direction, sourceButton) {
+      const previousPositions = captureCategoryPositions();
       const ids = allCategories().map((category) => category.id);
       const currentIndex = ids.indexOf(categoryId);
       const nextIndex = currentIndex + direction;
@@ -2452,6 +2534,7 @@
       categoryOrder = ids;
       saveCategoryOrder();
       render({ anchorCategoryId: categoryId });
+      animateCategoryReflow(previousPositions, categoryId);
 
       const card = board.querySelector(`[data-category="${CSS.escape(categoryId)}"]`);
       if (!card) return;
@@ -2496,6 +2579,7 @@
         if (dragState !== pendingDrag || pendingDrag.cancelled) return;
         pendingDrag.activated = true;
         pendingDrag.card.classList.add("is-dragging");
+        board.classList.add("has-active-drag");
         pendingDrag.handle.classList.remove("is-pressing");
         pendingDrag.handle.classList.add("is-active");
         if (navigator.vibrate) navigator.vibrate(18);
@@ -2523,10 +2607,12 @@
 
       const target = document.elementFromPoint(event.clientX, event.clientY)?.closest(".category");
       if (!target || target === dragState.card || target.parentElement !== board) return;
+      const previousPositions = captureCategoryPositions();
       const targetRect = target.getBoundingClientRect();
       const placeAfter = event.clientY > targetRect.top + targetRect.height / 2;
       board.insertBefore(dragState.card, placeAfter ? target.nextSibling : target);
       updateRenderedOrderState();
+      animateCategoryReflow(previousPositions, dragState.card.dataset.category);
       event.preventDefault();
     }
 
@@ -2538,10 +2624,16 @@
         handle.releasePointerCapture?.(event.pointerId);
       } catch {}
       card.classList.remove("is-dragging");
+      board.classList.remove("has-active-drag");
       handle.classList.remove("is-pressing", "is-active");
       dragState = null;
 
       if (!activated || !moved) return;
+      const runningAnimation = categoryShiftAnimations.get(card);
+      if (runningAnimation) {
+        runningAnimation.cancel();
+        categoryShiftAnimations.delete(card);
+      }
       categoryOrder = [...board.querySelectorAll(".category")].map((entry) => entry.dataset.category);
       saveCategoryOrder();
       card.classList.add("just-moved");
